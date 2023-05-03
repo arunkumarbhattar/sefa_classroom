@@ -3,6 +3,20 @@ from datetime import datetime, timedelta
 
 #THIS FILE CONTAINS:
 #fetchLists, fetchRepos, fetchTags, fetchDueDate, fetchHoursLate, fetchHWInfo
+def repo_has_tag(repo, tag, authName, authKey):
+    tags_url = repo["tags_url"]
+    response = requests.get(tags_url, auth=(authName, authKey))
+    tags = response.json()
+
+    # If tags is a single dictionary, wrap it in a list
+    if isinstance(tags, dict):
+        tags = [tags]
+
+    if isinstance(tags, list) and all(isinstance(t, dict) for t in tags):
+        return any(t["name"] == tag for t in tags)
+    else:
+        print(f"Unexpected tags format for repo {repo['name']}: {tags}")
+        return False
 
 def fetchLists(jsonFile, repoFilter=None):
     """Description: Obtains list of students and homeworks when given a JSON file of repositories
